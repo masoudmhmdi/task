@@ -53,7 +53,11 @@ function Provence() {
             onChange={(e) => handleCity(e.target.value as number)}
           >
             {data?.data.data.map((provence) => {
-              return <MenuItem value={provence.id}>{provence.name}</MenuItem>;
+              return (
+                <MenuItem key={provence.id} value={provence.id}>
+                  {provence.name}
+                </MenuItem>
+              );
             })}
           </Select>
         </FormControl>
@@ -62,7 +66,11 @@ function Provence() {
           <Select label="شهر">
             {city.length > 0 &&
               city.map((city) => {
-                return <MenuItem value={city.id}>{city.name}</MenuItem>;
+                return (
+                  <MenuItem key={city.id} value={city.id}>
+                    {city.name}
+                  </MenuItem>
+                );
               })}
           </Select>
         </FormControl>
