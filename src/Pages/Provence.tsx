@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Autocomplete, Box, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useGetProvence from '../hooks/useGetProvence';
 import useGetCity from '../hooks/useGetCity';
@@ -9,12 +10,14 @@ import { ICity } from '../types';
 function Provence() {
   const navigate = useNavigate();
   const [city, setCity] = useState<ICity['data'] | []>([]);
+  const [clearCity, triggerClearCity] = useState(0);
   const { data, isLoading } = useGetProvence();
   const { data: cityData, isLoading: cityLoading } = useGetCity();
-  const handleCity = (id: number) => {
+  const handleCity = (id: number | undefined) => {
     const updatedCities = cityData?.data.data.filter((i) => {
       return i.provinceId === id;
     });
+    triggerClearCity(Date.now());
     setCity(updatedCities as ICity['data']);
   };
 
@@ -46,34 +49,24 @@ function Provence() {
         }}
         component={'form'}
       >
-        <FormControl>
-          <InputLabel id="demo-simple-select-label">استان</InputLabel>
-          <Select
-            label="استان"
-            onChange={(e) => handleCity(e.target.value as number)}
-          >
-            {data?.data.data.map((provence) => {
-              return (
-                <MenuItem key={provence.id} value={provence.id}>
-                  {provence.name}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <InputLabel id="demo-simple-select-label">شهرستان</InputLabel>
-          <Select label="شهر">
-            {city.length > 0 &&
-              city.map((city) => {
-                return (
-                  <MenuItem key={city.id} value={city.id}>
-                    {city.name}
-                  </MenuItem>
-                );
-              })}
-          </Select>
-        </FormControl>
+        <Autocomplete
+          disablePortal
+          id="combo-box-demo"
+          options={data!.data.data}
+          getOptionLabel={(option) => option.name}
+          onChange={(e, val) => handleCity(val?.id)}
+          sx={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label="استان" />}
+        />
+        <Autocomplete
+          disablePortal
+          id="combo-box-demo"
+          options={city}
+          key={clearCity}
+          getOptionLabel={(option) => option.name}
+          sx={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label="شهر" />}
+        />
       </Box>
     </Box>
   );
